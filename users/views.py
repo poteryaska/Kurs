@@ -1,3 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView
+class LoginView(BaseLoginView):
+    template_name = 'users/login.html'
