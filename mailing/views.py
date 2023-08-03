@@ -1,16 +1,18 @@
+from mailbox import Message
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 import config.settings
 from mailing.forms import MessageCreateForm
-from mailing.models import Messages, Transfer
+from mailing.models import Messages, Transfer, Client
 
 
 class MainView(LoginRequiredMixin, ListView):
     """Main page with blog and statistic"""
     model = Messages
-    template_name = "mailing/massages.html"
+    template_name = "mailing/messages.html"
 
     # def get_queryset(self):
     #     """Execute blog part cash on main page"""
@@ -53,10 +55,11 @@ class MessagesView(ListView):
         context["Title"] = "Messages"
         context["Messages"] = self.get_queryset
         return context
+
 class MessageCreate(CreateView):
     """Create message"""
     model = Messages
-    template_name = "mailing/massage_form.html"
+    template_name = "mailing/message_create.html"
     form_class = MessageCreateForm
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -73,3 +76,66 @@ class MessageCreate(CreateView):
         self.object.owner = self.request.user
         self.object.save()
         return super().form_valid(form)
+
+class MessageUpdate(UpdateView):
+    model = Messages
+    fields = ["topic", "body"]
+    template_name = "mailing/message_update.html"
+    slug_url_kwarg = "message_slug"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Update Message"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:messages')
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+class MessageDelete(DetailView):
+    model = Messages
+    template_name = "mailing/confirm_delete.html"
+    slug_url_kwarg = "message_slug"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Delete Message"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:messages')
+
+class MessageCard(DetailView):
+    """Show all information about message"""
+    model = Messages
+    template_name = "mailing/message_card.html"
+    slug_url_kwarg = "message_slug"
+
+    def get_object(self, queryset=None):
+        one_message = super().get_object()
+        return one_message
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Message Full Information"
+        context["Message"] = self.get_object()
+        return context
+
+
+class ClientView(ListView):
+    model = Client
+    template_name = "mailing/clients.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset().all()
+        if not self.request.user.is_staff:
+            queryset = super().get_queryset().filter(owner=self.request.user)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Clients"
+        context["Clients"] = self.get_queryset()
+        return context
