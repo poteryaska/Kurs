@@ -2,10 +2,10 @@ from mailbox import Message
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import config.settings
-from mailing.forms import MessageCreateForm
+from mailing.forms import MessageCreateForm, ClientCreateForm
 from mailing.models import Messages, Transfer, Client
 
 
@@ -37,6 +37,93 @@ class MainView(LoginRequiredMixin, ListView):
     #     context["all_clients"] = len(Transfer.objects.all())
     #     context["unique_clients"] = len(Transfer.objects.all().values('email').distinct())
     #     return context
+
+class ClientView(ListView):
+    model = Client
+    template_name = "mailing/clients.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset().all()
+        if not self.request.user.is_staff:
+            queryset = super().get_queryset().filter(owner=self.request.user)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Clients"
+        context["Clients"] = self.get_queryset()
+        return context
+
+class ClientCreate(CreateView):
+    """Create client"""
+    model = Client
+    form_class = ClientCreateForm
+    template_name = "mailing/client_create.html"
+
+    def get_context_data(self, *, object_list=None, context_object_name=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Add New Client"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:clients')
+
+    def form_valid(self, form):
+        # save owner of user
+        self.object = form.save()
+        self.object.owner = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+class ClientCard(DetailView):
+    """Show all information about client"""
+    model = Client
+    template_name = "mailing/client_card.html"
+    slug_url_kwarg = "client_slug"
+
+    def get_object(self, queryset=None):
+        one_client = super().get_object()
+        return one_client
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Client Full Information"
+        context["Client"] = self.get_object()
+        return context
+
+class ClientUpdate(UpdateView):
+    """Update client"""
+    model = Client
+    fields = ["full_name", "comment", "email"]
+    template_name = "mailing/client_update.html"
+    slug_url_kwarg = "client_slug"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Update Client"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:clients')
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+class ClientDelete(DeleteView):
+    """Delete client"""
+    model = Client
+    template_name = "mailing/client_delete.html"
+    slug_url_kwarg = "client_slug"
+
+    def get_context_data(self, *, object_list=None, context_object_name=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Delete Client"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:clients')
+
+
 
 
 class MessagesView(ListView):
@@ -94,9 +181,9 @@ class MessageUpdate(UpdateView):
     def form_valid(self, form):
         return super().form_valid(form)
 
-class MessageDelete(DetailView):
+class MessageDelete(DeleteView):
     model = Messages
-    template_name = "mailing/confirm_delete.html"
+    template_name = "mailing/message_delete.html"
     slug_url_kwarg = "message_slug"
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -124,18 +211,3 @@ class MessageCard(DetailView):
         return context
 
 
-class ClientView(ListView):
-    model = Client
-    template_name = "mailing/clients.html"
-
-    def get_queryset(self):
-        queryset = super().get_queryset().all()
-        if not self.request.user.is_staff:
-            queryset = super().get_queryset().filter(owner=self.request.user)
-        return queryset
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["Title"] = "Clients"
-        context["Clients"] = self.get_queryset()
-        return context

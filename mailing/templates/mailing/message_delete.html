@@ -5,7 +5,7 @@
 		{% csrf_token %}
 		<p>Are you sure that you want to delete "{{ object }}"?</p>
 		<button type="submit" class="btn btn-danger">Yes</button>
-        <a href="{% url 'mailing:main_page' %}"  class="btn btn-warning">No</a>
+        <a href="{% url 'mailing:messages' %}"  class="btn btn-warning">No</a>
 	</form>
 </div>
 {% endblock %}

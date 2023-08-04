@@ -1,6 +1,7 @@
 from django import forms
 
-from mailing.models import Messages
+from mailing.models import Messages, Client
+
 
 class StyleFormMixin:
     def __init__(self, *args, **kwargs):
@@ -14,3 +15,11 @@ class MessageCreateForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Messages
         fields = ["topic", "body"]
+
+
+class ClientCreateForm(StyleFormMixin, forms.ModelForm):
+    """Form for create client"""
+
+    class Meta:
+        model = Client
+        fields = ["full_name", "email", "description"]
