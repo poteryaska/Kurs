@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.urls import path
 
 from mailing.views import MainView, MessageCreate, MessagesView, MessageCard, MessageUpdate, MessageDelete, ClientView, \
-    ClientCard, ClientUpdate, ClientDelete, ClientCreate
+    ClientCard, ClientUpdate, ClientDelete, ClientCreate, TransferView, TransferCreate, TransferDelete, TransferUpdate, \
+    TransferCard
 
 app_name = "mailing"
 
@@ -18,4 +19,9 @@ urlpatterns = [
     path("client_delete/<slug:client_slug>", ClientDelete.as_view(), name="client_delete"),
     path("client_update/<slug:client_slug>", ClientUpdate.as_view(), name="client_update"),
     path("client_card/<slug:client_slug>", ClientCard.as_view(), name="client_card"),
+    path("transfers/", TransferView.as_view(), name="transfers"),
+    path("transfer_create/", TransferCreate.as_view(), name="transfer_create"),
+    path("transfer_delete/<slug:transfer_slug>", TransferDelete.as_view(), name="transfer_delete"),
+    path("transfer_update/<slug:transfer_slug>", TransferUpdate.as_view(), name="transfer_update"),
+    path("transfer_card/<slug:transfer_slug>", TransferCard.as_view(), name="transfer_card"),
     ]

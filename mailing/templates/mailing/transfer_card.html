@@ -1,0 +1,22 @@
+{% extends 'mailing/base.html' %}
+
+{% block body %}
+
+<li>Title: {{ Transfer.title }}</li>
+<li>Owner: {{ Transfer.owner|default:"No owner." }}</li>
+<li>Time: {{ Transfer.time }}</li>
+<li>Periodicity: {{ Transfer.periodicity }}</li>
+<li>Message topic: {{ Transfer.message.topic }}</li>
+<li>Message body: {{ Transfer.message.body }}</li>
+<li>Is Published: {{ Transfer.is_published }}</li>
+<br>
+<h5> Clients: </h5>
+{% for cl in Transfer.client.all %}
+<li>{{ cl }}</li>
+{%  endfor %}
+<br>
+{#<h5>Last Statistics:</h5>#}
+{#{% for i in Statistic %}#}
+{#<p>{{ i }} </p>#}
+{#{% endfor%}#}
+{% endblock %}

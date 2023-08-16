@@ -1,0 +1,27 @@
+{% extends 'mailing/base.html' %}
+
+{% block body %}
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if perms.mailing.change_transfer %}
+
+     <p class="form-control" > Title: {{ form.title }}  </p>
+     <p class="form-control"> Time: {{ form.time }} </p>
+     <p class="form-control"> Periodicity: {{ form.periodicity }} </p>
+     <p class="form-control"> Message: {{ form.message }} </p>
+     <p class="form-control"> Client: {{ form.client }} </p>
+
+
+    {% else %}
+         {{ form.title.as_hidden }}
+         {{ form.time.as_hidden }}
+         {{ form.periodicity.as_hidden }}
+         {{ form.message.as_hidden }}
+         {{ form.client.as_hidden }}
+    {% endif %}
+
+     Active: {{ form.is_published }}
+<br><br>
+<input type="submit" value="Submit">
+</form>
+{% endblock %}

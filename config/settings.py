@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mailing',
     'users',
-
+    'django_crontab',
 
 ]
 
@@ -150,3 +150,7 @@ AUTH_USER_MODEL = 'users.User'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/users/'
+
+CRONJOBS = [
+    ('*/5 * * * *', 'mailing.cron.transfer')
+]

@@ -1,0 +1,53 @@
+{% extends 'mailing/base.html' %}
+{% block body %}
+<div class="table-responsive small">
+<table class="table table-striped table-sm">
+        <thead>
+        <tr>
+              <th scope="col">#</th>
+              <th scope="col">Title</th>
+              <th scope="col">Periodicity</th>
+              <th scope="col">Status</th>
+              <th scope="col">Time to Send</th>
+              <th scope="col">Is Active</th>
+              {% if perms.mailing.view_transfer %}
+              <th scope="col">Full View</th>
+              {% endif %}
+              {% if perms.mailing.view_transfer %}
+              <th scope="col">Update</th>
+              {% endif %}
+              {% if perms.mailing.delete_transfer %}
+              <th scope="col">Delete</th>
+              {% endif %}
+        </tr>
+        </thead>
+
+{% for trans in Transfer %}
+    <tbody>
+        <tr>
+            <td>{{trans.pk}}</td>
+            <td>{{trans.title}}</td>
+            <td>{{trans.periodicity}}</td>
+            <td>{{trans.status}}</td>
+            <td>{{trans.time | date:"H:i:s"}}</td>
+
+            {% if transfer.is_published %}
+                <td> Yes </td>
+            {% else %}
+                 <td> No </td>
+            {% endif %}
+            {% if perms.mailing.view_transfer %}
+                <td> <a href="{% url 'mailing:transfer_card' trans.slug %}"  class="btn btn-sm btn-outline-secondary">View</a></td>
+            {% endif %}
+            {% if perms.mailing.view_transfer %}
+                <td> <a href="{% url 'mailing:transfer_update' trans.slug %}"  class="btn btn-sm btn-outline-secondary">Update</a></td>
+            {% endif %}
+            {% if perms.mailing.delete_transfer %}
+                <td> <a href="{% url 'mailing:transfer_delete' trans.slug %}"  class="btn btn-sm btn-outline-secondary">Delete</a></td>
+            {% endif %}
+        </tr>
+      </tbody>
+ {% endfor %}
+</table>
+</div>
+{% endblock %}

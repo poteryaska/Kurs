@@ -1,6 +1,6 @@
 from django import forms
 
-from mailing.models import Messages, Client
+from mailing.models import Messages, Client, Transfer
 
 
 class StyleFormMixin:
@@ -23,3 +23,15 @@ class ClientCreateForm(StyleFormMixin, forms.ModelForm):
     class Meta:
         model = Client
         fields = ["full_name", "email", "description"]
+
+
+class TransferCreateForm(StyleFormMixin, forms.ModelForm):
+    """Form for create transmission"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["message"].empty_label = "Select Message"
+
+    class Meta:
+        model = Transfer
+        fields = ["title", "time", "periodicity", "message", "client"]

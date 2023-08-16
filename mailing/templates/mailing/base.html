@@ -74,7 +74,13 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'mailing:clients' %}">
               <span data-feather="file"></span>
-              Клиенты
+              Clients
+            </a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'mailing:client_create' %}">
+              <span data-feather="file"></span>
+              Create a new client
             </a>
           </li>
           <li class="nav-item">
@@ -89,18 +95,18 @@
               Make message
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="bar-chart-2"></span>
-              Reports
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'mailing:transfers' %}">
+              <span data-feather="shopping-cart"></span>
+              Transfers
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="layers"></span>
-              Integrations
+             </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{% url 'mailing:transfer_create' %}">
+              <span data-feather="shopping-cart"></span>
+              Create a new transfer
             </a>
-          </li>
+
         </ul>
         </ul>
       </div>

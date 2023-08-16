@@ -1,3 +1,4 @@
+from datetime import datetime
 from mailbox import Message
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import config.settings
-from mailing.forms import MessageCreateForm, ClientCreateForm
+from mailing.forms import MessageCreateForm, ClientCreateForm, TransferCreateForm
 from mailing.models import Messages, Transfer, Client
 
 
@@ -44,14 +45,14 @@ class ClientView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().all()
-        if not self.request.user.is_staff:
-            queryset = super().get_queryset().filter(owner=self.request.user)
+        # if not self.request.user.is_staff:
+        #     queryset = super().get_queryset().filter(owner=self.request.user)
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context["Title"] = "Clients"
-        context["Clients"] = self.get_queryset()
+        context["Client"] = self.get_queryset()
         return context
 
 class ClientCreate(CreateView):
@@ -94,7 +95,7 @@ class ClientCard(DetailView):
 class ClientUpdate(UpdateView):
     """Update client"""
     model = Client
-    fields = ["full_name", "comment", "email"]
+    fields = ["full_name", "description", "email"]
     template_name = "mailing/client_update.html"
     slug_url_kwarg = "client_slug"
 
@@ -211,3 +212,121 @@ class MessageCard(DetailView):
         return context
 
 
+class TransferCard(DetailView):
+    """Show all information about transmission"""
+    model = Transfer
+    template_name = "mailing/transfer_card.html"
+    slug_url_kwarg = "transfer_slug"
+
+    def get_object(self, queryset=None):
+        one_transfer = super().get_object()
+        return one_transfer
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Transfer Full Information"
+        current_object = self.get_object()
+        context["Transfer"] = current_object
+        # context["Statistic"] = current_object.get_statistic()
+        return context
+class TransferView(ListView):
+    """Show all transmissions for owner / moderator / admin"""
+    model = Transfer
+    template_name = "mailing/transfers.html"
+
+    def get_queryset(self):
+        queryset = super().get_queryset().all()
+        # if not self.request.user.is_staff:
+        #     queryset = super().get_queryset().filter(owner=self.request.user)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Transfers"
+        context["Transfer"] = self.get_queryset()
+        return context
+
+
+
+class TransferCreate(CreateView):
+    """Create transmission"""
+    model = Transfer
+    form_class = TransferCreateForm
+    template_name = "mailing/transfer_create.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Create New Transfer"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:transfers')
+
+    def form_valid(self, form):
+
+        # Create default statistic for transmission
+        current_transmission = self.object
+        self.object = form.save()
+
+        # save owner of transmission
+        self.object.owner = self.request.user
+        self.object.save()
+
+        # Set default data for created transmission
+        # Statistic.objects.create(transfer_id=self.object.pk)
+
+        # Executing send message
+        schedule_transmission_time = self.object.time
+        current_time = datetime.now().time()
+        # if schedule_transmission_time <= current_time:
+        #     message_data = self.object.message.get_info()
+        #     sendmail(self.object.pk, self.object.clients.all(), message_data[0], message_data[1])
+        #     self.object.status = "FINISHED"
+        #     self.object.save()
+
+        return super().form_valid(form)
+
+
+class TransferDelete(DeleteView):
+    """Delete transmission"""
+    model = Transfer
+    template_name = "mailing/transfer_delete.html"
+    slug_url_kwarg = "transfer_slug"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Delete Transfer"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:transfers')
+
+
+class TransferUpdate(UpdateView):
+    """Update transmission"""
+    model = Transfer
+    fields = ["title", "time", "periodicity", "message", "client", "is_published"]
+    template_name = "mailing/transfer_update.html"
+    slug_url_kwarg = "transfer_slug"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Update transfer"
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('mailing:transfers')
+
+    # def form_valid(self, form):
+    #     # check send time
+    #     schedule_transmission_time_update = form.cleaned_data["time"]
+    #     current_time = datetime.now().time()
+    #     self.object.status = "CREATED"
+    #     self.object.save()
+    #     # if schedule_transfer_time_update <= current_time and self.object.is_published is True:
+    #     #     message_data = self.object.message.get_info()
+    #     #     sendmail(self.object.pk, self.object.clients.all(), message_data[0], message_data[1])
+    #     #     self.object.status = "FINISHED"
+    #     #     self.object.save()
+    #
+    #     return super().form_valid(form)
