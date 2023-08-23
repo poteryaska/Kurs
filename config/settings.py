@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -152,5 +152,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/users/'
 
 CRONJOBS = [
-    ('*/5 * * * *', 'mailing.cron.transfer')
+    ('*/1 * * * *', 'mailing.cron.run_transfer')
 ]

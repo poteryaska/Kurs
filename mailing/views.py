@@ -1,13 +1,18 @@
 from datetime import datetime
 from mailbox import Message
+from mailing.cron import sendmails
 
+import pytz
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import config.settings
+import mailing.models
+from config import settings
 from mailing.forms import MessageCreateForm, ClientCreateForm, TransferCreateForm
-from mailing.models import Messages, Transfer, Client
+from mailing.models import Messages, Transfer, Client, Logs
 
 
 class MainView(LoginRequiredMixin, ListView):
@@ -273,18 +278,24 @@ class TransferCreate(CreateView):
         self.object.save()
 
         # Set default data for created transmission
-        # Statistic.objects.create(transfer_id=self.object.pk)
+        Logs.objects.create(transfer_id=self.object.pk)
 
         # Executing send message
-        schedule_transmission_time = self.object.time
+        schedule_transfer_time = self.object.time
         current_time = datetime.now().time()
-        # if schedule_transmission_time <= current_time:
-        #     message_data = self.object.message.get_info()
-        #     sendmail(self.object.pk, self.object.clients.all(), message_data[0], message_data[1])
-        #     self.object.status = "FINISHED"
-        #     self.object.save()
+        if schedule_transfer_time <= current_time:
+
+            sendmails(self.object.pk,
+                      self.object.client.all(),
+                      self.object.message.topic,
+                      self.object.message.body
+                      )
+
+            self.object.status = "FINISHED"
+            self.object.save()
 
         return super().form_valid(form)
+
 
 
 class TransferDelete(DeleteView):

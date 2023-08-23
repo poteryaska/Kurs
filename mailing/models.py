@@ -2,6 +2,7 @@ from django.db import models
 import django as django
 from django.template.defaultfilters import slugify as d_slugify
 from config import settings
+from django.utils import timezone
 
 NULLABLE = {'blank': True, "null": True}
 
@@ -76,6 +77,19 @@ class Transfer(models.Model):
         verbose_name = "Transfer"
         verbose_name_plural = "Transfers"
 
+    def get_statistic(self):
+        """Get statistic of send. Use Related name in Statistic"""
+        return self.logs_of_transfers.all()
+
+    def get_messages(self):
+        """Get message for transmission when used scheduler"""
+        messages = self.message
+        return messages
+
+    def get_clients(self):
+        """Get clients for transmission when used scheduler"""
+        clients = self.client.all()
+        return clients
 
 class Messages(models.Model):
     """Model message for clients for sending"""
