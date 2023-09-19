@@ -1,10 +1,11 @@
 import smtplib
 
-import schedule
 import time
+import schedule
+from datetime import datetime
 import mailing.models
 import pytz
-import datetime
+
 import mailing.models
 from django.core.mail import send_mail
 from django.conf import settings
@@ -17,7 +18,7 @@ def sendmails(transfer_id: str, emails_base: list, message_topic: str, message_b
         statistic = mailing.models.Logs.objects.get(transfer_id=transfer_id)
         statistic.status = "FINISHED"
         statistic.mail_answer = "OK"
-        statistic.time = datetime.datetime.now()
+        statistic.time = datetime.now()
         statistic.save()
 
         change_transfer_status = mailing.models.Transfer.objects.get(id=transfer_id)
@@ -31,7 +32,7 @@ def sendmails(transfer_id: str, emails_base: list, message_topic: str, message_b
         statistic = mailing.models.Logs.objects.get(transfer_id=transfer_id)
         statistic.status = "FINISHED"
         statistic.mail_answer = "ERROR"
-        statistic.time = datetime.datetime.now()
+        statistic.time = datetime.now()
         statistic.save()
 
         change_transfer_status = mailing.models.Transfer.objects.get(id=transfer_id)
@@ -45,7 +46,6 @@ def run_transfer():
     active_transfer = mailing.models.Transfer.objects.filter(is_published=True)
     print("PREPARE SEND")
 
-    # DAILY SCHEDULER
     for transfer in active_transfer:
         emails_base = []
         print("TRANSFER TITLE:", transfer.title)

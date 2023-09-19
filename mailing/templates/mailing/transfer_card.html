@@ -15,8 +15,8 @@
 <li>{{ cl }}</li>
 {%  endfor %}
 <br>
-{#<h5>Last Statistics:</h5>#}
-{#{% for i in Statistic %}#}
-{#<p>{{ i }} </p>#}
-{#{% endfor%}#}
+<h5>Last Statistics:</h5>
+{% for i in Logs %}
+<p>{{ i }} </p>
+{% endfor%}
 {% endblock %}

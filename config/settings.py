@@ -116,7 +116,7 @@ TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -143,6 +143,7 @@ EMAIL_HOST_PASSWORD = 'stkyhzryiwzvfvpj'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -151,6 +152,7 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/users/'
 
+CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
-    ('*/1 * * * *', 'mailing.cron.run_transfer')
-]
+    ('*/1 * * * *', 'mailing.cron.run_transfer'),
+    ]

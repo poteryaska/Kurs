@@ -270,7 +270,7 @@ class TransferCreate(CreateView):
     def form_valid(self, form):
 
         # Create default statistic for transmission
-        current_transmission = self.object
+        current_transfer = self.object
         self.object = form.save()
 
         # save owner of transmission
