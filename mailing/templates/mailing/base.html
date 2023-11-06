@@ -55,7 +55,20 @@
   <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
   <div class="navbar-nav">
     <div class="nav-item text-nowrap">
-      <a class="nav-link px-3" href="#">Sign out</a>
+   <div class="col-sm-4 offset-md-1 py-4">
+
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'mailing:main_page' %}">Главная</a></li>
+
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'users:profile' %}">Профиль</a></li>
+                            <li><a href="{% url 'users:logout' %}">Выход</a></li>
+                        {% else %}
+                            <li><a href="{% url 'users:login' %}">Вход</a></li>
+                            <li><a href="{% url 'users:register' %}">Регистрация</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
     </div>
   </div>
 </header>
