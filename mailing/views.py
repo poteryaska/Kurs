@@ -328,16 +328,20 @@ class TransferUpdate(UpdateView):
     def get_success_url(self, **kwargs):
         return reverse_lazy('mailing:transfers')
 
-    # def form_valid(self, form):
-    #     # check send time
-    #     schedule_transmission_time_update = form.cleaned_data["time"]
-    #     current_time = datetime.now().time()
-    #     self.object.status = "CREATED"
-    #     self.object.save()
-    #     # if schedule_transfer_time_update <= current_time and self.object.is_published is True:
-    #     #     message_data = self.object.message.get_info()
-    #     #     sendmail(self.object.pk, self.object.clients.all(), message_data[0], message_data[1])
-    #     #     self.object.status = "FINISHED"
-    #     #     self.object.save()
-    #
-    #     return super().form_valid(form)
+    def form_valid(self, form):
+        # check send time
+        schedule_transmission_time_update = form.cleaned_data["time"]
+        current_time = datetime.now().time()
+        self.object.status = "CREATED"
+        self.object.save()
+        if schedule_transmission_time_update <= current_time and self.object.is_published is True:
+
+            sendmails(self.object.pk,
+                      self.object.client.all(),
+                      self.object.message.topic,
+                      self.object.message.body
+                      )
+            self.object.status = "FINISHED"
+            self.object.save()
+
+        return super().form_valid(form)

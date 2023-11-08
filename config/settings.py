@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv((BASE_DIR / '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -80,9 +82,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'mailing',
-        'USER': 'postgres', # Пользователь для подключения
-        'PASSWORD': '006711Vf', # Пароль для этого пользователя
+        'NAME': os.getenv('BASE_NAME'),
+        'USER': os.getenv('BASE_USER'),# Пользователь для подключения
+        'PASSWORD': os.getenv('BASE_PASSWORD'),# Пароль для этого пользователя
 
     }
 }
@@ -138,8 +140,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_HOST = "smtp.gmail.com"
-EMAIL_HOST_USER = 'lemanove@gmail.com'
-EMAIL_HOST_PASSWORD = 'stkyhzryiwzvfvpj'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -151,6 +153,14 @@ AUTH_USER_MODEL = 'users.User'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/users/'
+
+CACHE_ENABLED = os.getenv('CACHE_ENABLED') == '1'
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv("CACHE_LOCATION"),
+    }
+}
 
 CRONTAB_COMMAND_SUFFIX = '2>&1'
 CRONJOBS = [
