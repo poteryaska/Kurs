@@ -10,11 +10,11 @@
             <div class="card-header"></div>
             <div class="card-body">
                 <form method="post">
-                    {%  csrf_token %}
+                    {% csrf_token %}
                     {{ form.as_p}}
                 <p><button type="submit" class="btn btn-success">Enter</button></p>
                 <p><a href="{% url 'users:password_reset'  %}" class="btn btn-success">Reset Password</a></p>
-                <p><a href="{% url 'users:registration'  %}" class="btn btn-success">Registration</a></p>
+                <p><a href="{% url 'users:register'  %}" class="btn btn-success">Registration</a></p>
                 </form>
             </div>
         </div>
