@@ -12,7 +12,6 @@
                     {% csrf_token %}
                     {{ form.as_p}}
                 <p><button type="submit" class="btn btn-success">Save</button></p>
-                <a href="{% url 'users:generate_password' %}" class="btn btn-success">Generate New Password</a>
                 </form>
             </div>
         </div>

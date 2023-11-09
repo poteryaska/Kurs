@@ -2,7 +2,8 @@ from django.contrib.auth import login
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import render, redirect
-from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView
+from django.contrib.auth.views import LoginView as BaseLoginView, PasswordResetDoneView, PasswordResetView, \
+    PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.urls import reverse_lazy, reverse
 from django.utils.encoding import force_bytes
@@ -27,7 +28,7 @@ class RegisterView(CreateView):
     model = User
     form_class = UserForm
     success_url = reverse_lazy('users:login')
-    template_name = 'users/register.html'
+    template_name = 'users/register_form.html'
 
     def form_valid(self, form):
         user = form.save()
@@ -84,17 +85,24 @@ class UserUpdateView(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-def generate_password(request):
-    """Generate new password for user."""
-    new_password = "".join([str(random.randint(0, 9)) for _ in range(12)])
-    send_mail(
-        subject="Changed password on site",
-        from_email=settings.EMAIL_HOST_USER,
-        message=f"Your new password {new_password}",
-        fail_silently=False,
-        recipient_list=[request.user.email]
-    )
-    request.user.set_password(new_password)
-    request.user.save()
-    return redirect(reverse("mailing:main_page"))
+class UserResetView(PasswordResetView):
+    """First step for reset user password"""
+    template_name = "users/password_reset_form.html"
+    email_template_name = "users/password_reset_email.html"
+    success_url = reverse_lazy('users:password_reset_done')
 
+
+class UserResetDoneView(PasswordResetDoneView):
+    """Second step for reset user password"""
+    template_name = "users/password_reset_done.html"
+
+
+class UserResetConfirmView(PasswordResetConfirmView):
+    """User confirm reset and changed password"""
+    template_name = "users/password_reset_confirm.html"
+    success_url = reverse_lazy("users:password_reset_complete")
+
+
+class UserResetCompleteView(PasswordResetCompleteView):
+    """Reset done information"""
+    template_name = "users/password_reset_complete.html"
