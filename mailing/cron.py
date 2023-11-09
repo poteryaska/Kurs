@@ -2,9 +2,8 @@ import smtplib
 
 import time
 import schedule
-from datetime import datetime
+from datetime import datetime, timedelta
 import mailing.models
-import pytz
 
 import mailing.models
 from django.core.mail import send_mail
@@ -56,7 +55,7 @@ def run_transfer():
             convert_time = str(transfer.time)[:5]
             print("TIME:", convert_time)
             message = transfer.get_messages()
-            print("MESSAGE TOPIC:", message.theme)
+            print("MESSAGE TOPIC:", message.topic)
             print("MESSAGE BODY:", message.body)
             for client_mail in transfer.get_clients():
                 print("EMAIL:", client_mail.email)
