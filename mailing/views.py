@@ -1,7 +1,9 @@
 from datetime import datetime
 from mailbox import Message
+import random
+from blog.models import Blog
 from mailing.cron import sendmails
-
+from django.core.cache import cache
 import pytz
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
@@ -9,40 +11,41 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import config.settings
-import mailing.models
 from config import settings
 from mailing.forms import MessageCreateForm, ClientCreateForm, TransferCreateForm
 from mailing.models import Messages, Transfer, Client, Logs
+from blog.models import Blog
 
 
 class MainView(LoginRequiredMixin, ListView):
     """Main page with blog and statistic"""
     model = Messages
-    template_name = "mailing/messages.html"
+    template_name = "mailing/main.html"
 
-    # def get_queryset(self):
-    #     """Execute blog part cash on main page"""
-    #     if config.settings.CACHE_ENABLED:
-    #         key = 'main_blog'
-    #         cache_data = cache.get(key)
-    #         if cache_data is None:
-    #             cache_data = Blog.objects.order_by('?')[:3]
-    #             cache.set(key, cache_data)
-    #     else:
-    #         cache_data = Blog.objects.order_by('?')[:3]
-    #     return cache_data
+    def get_queryset(self):
+        """Execute blog part cash on main page"""
+        if config.settings.CACHE_ENABLED:
+            key = 'main_blog'
+            cache_data = cache.get(key)
+            if cache_data is None:
+                cache_data = Blog.objects.order_by('?')[:3]
+                cache.set(key, cache_data)
+        else:
+            cache_data = Blog.objects.order_by('?')[:3]
+        return cache_data
 
-    # def get_context_data(self, *, object_list=None, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context["Title"] = "Main"
-    #     # show blogs
-    #     context["Blog"] = self.get_queryset()
-    #     # show statistic
-    #     context["all_transmissions"] = len(Transfer.objects.all())
-    #     context["active_transmissions"] = len(Transfer.objects.filter(is_published=True))
-    #     context["all_clients"] = len(Transfer.objects.all())
-    #     context["unique_clients"] = len(Transfer.objects.all().values('email').distinct())
-    #     return context
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["Title"] = "Main"
+        # show blogs
+        context["Blog"] = self.get_queryset()
+        # show statistic
+        context["all_transfers"] = len(Transfer.objects.all())
+        context["active_transfers"] = len(Transfer.objects.filter(is_published=True))
+        context["all_clients"] = len(Client.objects.all())
+        context["unique_clients"] = len(Client.objects.all().values('email').distinct())
+        # context["random_articles"] = Blog.objects.order_by('?')[:3]
+        return context
 
 class ClientView(ListView):
     model = Client

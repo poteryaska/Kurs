@@ -31,7 +31,7 @@
 Не забудьте про связи между сущностями. Вы можете расширять модели для сущностей в произвольном 
 количестве полей либо добавлять вспомогательные модели.
 
-!!!! Логика работы системы
++ Логика работы системы
 После создания новой рассылки, если текущее время больше времени начала и меньше времени окончания, то 
 должны быть выбраны из справочника все клиенты, которые указаны в настройках рассылки, и запущена отправка 
 для всех этих клиентов.
@@ -86,30 +86,58 @@ crontab — классический демон, который использу
 пользователь не мог случайным образом изменить чужую рассылку и мог работать только со своим списком 
 клиентов и со своим списком рассылок.
 
-Продвижение
 Блог
-
 Реализуйте приложение для ведения блога. При этом отдельный интерфейс реализовывать не требуется, 
 но необходимо настроить административную панель для контент-менеджера.
 
-СДЕЛАЮ:
-
-В сущность блога добавьте следующие поля:
++ В сущность блога добавьте следующие поля:
 
 заголовок,
 содержимое статьи,
 изображение,
 количество просмотров,
 дата публикации.
-Главная страница
 
-Реализуйте главную страницу в произвольном формате, но обязательно отобразите следующую информацию:
-количество рассылок всего,
-количество активных рассылок,
-количество уникальных клиентов для рассылок,
-3 случайные статьи из блога.
++ Главная страница
++ Реализуйте главную страницу в произвольном формате, но обязательно отобразите следующую информацию:
++ количество рассылок всего,
++ количество активных рассылок,
++ количество уникальных клиентов для рассылок,
++ 3 случайные статьи из блога.
 
-Кеширование
++ Кеширование
 Для блога и главной страницы самостоятельно выберите, какие данные необходимо кешировать, а также каким 
 способом необходимо произвести кеширование.
 
+# Coursework_6
+## DJANGO
+### Allow to create scheduler transfer for sending messages to clients
+## Requirements.
+* Python
+* Rest
+* Postgres
+## Installation
+* Download repo
+* Install requirements (pip install -r requirements.txt)
+* Run service Rest
+## Prepare 
+* prepare .env file (examples in .env_sample)
+* create database for postgres 'mailing'
+* prepare migrations (python manage.py makemigrations)
+* make migrate (python manage.py migrate)
+* prepare platform (python manage.py ccsu)
+* python manage.py crontab add
+* python manage.py runserver
+## Info about users and groups
+After prepare platform you will have 
+* groups moderator and users
+* user lemanove@gmail.com (password 12345678)
+* user moderator@gmail.com (password 12345678)
+* user test@gmail.com (password 12345678)
+
+## How it works.
+* Create messages (moderators only can see, users have all rights)
+* Create clients for sending (moderators only can see, users have all rights)
+* Create transmissions for sending (moderators only can see and change published/unpublished status, users have all rights)
+* Users can see only theirs own tasks/users/messages
+* django_crontab runs schedule function every 1 minute that executes your jobs
