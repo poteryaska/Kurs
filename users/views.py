@@ -15,7 +15,7 @@ import config.settings
 from config import settings
 from users.forms import UserForm, UserProfileForm
 from users.models import User
-import random
+
 
 class LoginView(BaseLoginView):
     template_name = 'users/login.html'
