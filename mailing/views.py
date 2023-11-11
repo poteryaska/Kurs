@@ -1,17 +1,12 @@
 from datetime import datetime
-from mailbox import Message
-import random
-from blog.models import Blog
 from mailing.cron import sendmails
 from django.core.cache import cache
-import pytz
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 import config.settings
-from config import settings
 from mailing.forms import MessageCreateForm, ClientCreateForm, TransferCreateForm
 from mailing.models import Messages, Transfer, Client, Logs
 from blog.models import Blog
@@ -44,7 +39,7 @@ class MainView(LoginRequiredMixin, ListView):
         context["active_transfers"] = len(Transfer.objects.filter(is_published=True))
         context["all_clients"] = len(Client.objects.all())
         context["unique_clients"] = len(Client.objects.all().values('email').distinct())
-        # context["random_articles"] = Blog.objects.order_by('?')[:3]
+
         return context
 
 class ClientView(ListView):
@@ -53,8 +48,8 @@ class ClientView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().all()
-        # if not self.request.user.is_staff:
-        #     queryset = super().get_queryset().filter(owner=self.request.user)
+        if not self.request.user.is_staff:
+            queryset = super().get_queryset().filter(owner=self.request.user)
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -131,8 +126,6 @@ class ClientDelete(DeleteView):
 
     def get_success_url(self, **kwargs):
         return reverse_lazy('mailing:clients')
-
-
 
 
 class MessagesView(ListView):
@@ -235,7 +228,7 @@ class TransferCard(DetailView):
         context["Title"] = "Transfer Full Information"
         current_object = self.get_object()
         context["Transfer"] = current_object
-        # context["Statistic"] = current_object.get_statistic()
+        context["Logs"] = current_object.get_statistic()
         return context
 class TransferView(ListView):
     """Show all transmissions for owner / moderator / admin"""
@@ -244,8 +237,8 @@ class TransferView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset().all()
-        # if not self.request.user.is_staff:
-        #     queryset = super().get_queryset().filter(owner=self.request.user)
+        if not self.request.user.is_staff:
+            queryset = super().get_queryset().filter(owner=self.request.user)
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):

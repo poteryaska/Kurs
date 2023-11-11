@@ -1,5 +1,5 @@
 {% extends 'mailing/base.html' %}
-{% load my_tags %}
+{% load mailing_tags %}
 {% block body %}
     {% if Blog %}
     <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
@@ -16,7 +16,7 @@
             <div class="card-body">
              <ul class="list-unstyled mt-3 mb-4">
                {% if item.image%}
-                    <li><img src="{% mediapath item.image %}" width="200"></li>
+                    <li><img src="{% media_path item.image %}" width="200"></li>
                {% endif %}
               </ul>
                 <a href="{% url 'blog:blog_card' item.slug %}" class="btn btn-sm btn-outline-secondary">View</a>
@@ -35,9 +35,9 @@
       <p class="fs-6 text-body-secondary">Statistic</p>
     </div>
     <li> All Transfers: {{ all_transfers }} </li>
-    <li> Active Transmissions: {{ active_transfers }} </li>
+    <li> Active Transfers: {{ active_transfers }} </li>
     <li> All Clients: {{ all_clients }} </li>
     <li> Unique Clients: {{ unique_clients }} </li>
-<!--    <li> Random articles: {{ random_articles }} </li>-->
+
 
 {% endblock %}

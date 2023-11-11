@@ -96,25 +96,30 @@
               Transfers
             </a>
              </li>
+            {% if perms.mailing.add_client %}
             <li class="nav-item">
             <a class="nav-link" href="{% url 'mailing:client_create' %}">
               <span data-feather="file"></span>
               Create a new client
             </a>
           </li>
+            {% endif %}
+            {% if perms.mailing.add_messages %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'mailing:message_create' %}">
               <span data-feather="users"></span>
               Make message
             </a>
           </li>
-
+            {% endif %}
+            {% if perms.mailing.add_transfer %}
             <li class="nav-item">
             <a class="nav-link" href="{% url 'mailing:transfer_create' %}">
               <span data-feather="shopping-cart"></span>
               Create a new transfer
             </a>
-
+            </li>
+            {% endif %}
         </ul>
         </ul>
       </div>
